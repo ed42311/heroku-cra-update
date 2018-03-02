@@ -24,7 +24,7 @@ if (cluster.isMaster) {
 } else {
   const app = express();
   mongoose.Promise = require('bluebird');
-  var Feature = require('./models/Feature');
+  var Feature = require('../models/Feature');
   const router = express.Router();
 
   // Priority serve any static files.
@@ -37,12 +37,11 @@ if (cluster.isMaster) {
     next();
   });
 
-  const db = process.env.MONGODB_URI || 'mongodb://localhost/bears';
+  const db = process.env.MONGODB_URI || 'mongodb://localhost/dnd-test';
 
-  // connect to database
   mongoose.connection.openUri(db);
 
-  // Answer API requests.
+  //Answer API requests.
   app.get('/api', function (req, res) {
     res.set('Content-Type', 'application/json');
     res.send('{"message":"Hello from the custom server!"}');
@@ -79,11 +78,11 @@ if (cluster.isMaster) {
       });
     })
     .get(function(req, res){
-      Feature.find(function(err, bears){
+      Feature.find(function(err, features){
         if(err) {
           res.send(err);
         } else {
-          res.json(bears);
+          res.json(features);
         }
       });
     });

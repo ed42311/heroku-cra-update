@@ -11,7 +11,7 @@ export default class BearsTest extends Component {
   }
 
   componentDidMount() {
-    fetch('/api/bears')
+    fetch('/api/features')
       .then(response => {
         if (!response.ok) {
           throw new Error(`status ${response.status}`);
@@ -35,8 +35,8 @@ export default class BearsTest extends Component {
   render() {
     return (
       <div className="FeatureTest">
-        {this.state.feature.length > 0 ?
-          this.state.feature.map((feature) => <p>{feature.name}</p>) :
+        {this.state.features.length > 0 ?
+          this.state.features.map((feature) => <p>{feature.name}</p>) :
           (<h2>no bears</h2>)
         }
       </div>
