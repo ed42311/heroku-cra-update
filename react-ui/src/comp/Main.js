@@ -1,13 +1,13 @@
 import React from 'react';
 import { Switch, Route } from 'react-router-dom'
 import ApiTest from './ApiTest'
-import BearTest from './BearTest'
+import FeatureTest from './FeatureTest'
 
 const Main = () => (
   <main>
     <Switch>
       <Route exact path='/' component={ApiTest}/>
-      <Route exact path='/bears' component={BearTest}/>
+      <Route exact path='/feature' component={FeatureTest}/>
     </Switch>
   </main>
 )

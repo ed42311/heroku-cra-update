@@ -3,6 +3,7 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const mongoose  = require('mongoose');
 const cluster = require('cluster');
+const request = require('request');
 const numCPUs = require('os').cpus().length;
 
 const PORT = process.env.PORT || 5000;
@@ -23,22 +24,23 @@ if (cluster.isMaster) {
 } else {
   const app = express();
   mongoose.Promise = require('bluebird');
-  const Bear = require('../models/Bear');
+  var Feature = require('./models/Feature');
   const router = express.Router();
 
   // Priority serve any static files.
   app.use(express.static(path.resolve(__dirname, '../react-ui/build')));
   app.use(bodyParser.urlencoded({ extended : true }));
   app.use(bodyParser.json());
-  // app.use(function(req, res, next) {
-  //   res.header("Access-Control-Allow-Origin", "*");
-  //   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  //   next();
-  // });
-  // check to see I if I need this...
+  app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+  });
+
+  const db = process.env.MONGODB_URI || 'mongodb://localhost/bears';
 
   // connect to database
-  mongoose.connection.openUri('mongodb://localhost/bears');
+  mongoose.connection.openUri(db);
 
   // Answer API requests.
   app.get('/api', function (req, res) {
@@ -55,59 +57,45 @@ if (cluster.isMaster) {
     res.json({ message: "Hello, welcome to our api!"})
   })
 
-  router.route('/bears')
-
+  router.route('/features')
     .post(function(req, res){
-      var bear = new Bear();
-      bear.name = req.body.name;
+      var feature = new Feature();
+      feature.index = 1;
+      feature.name = "COD";
+      feature.full_name = "Codin\'";
+      feature.desc = ["Thas how good you are at codin\'"],
+      feature.skills = [{
+        "url": "https://git.heroku.com/shrouded-stream-28894/api/skills/123",
+        "name": "Typin\'"
+      }];
+      feature.url = "https://git.heroku.com/shrouded-stream-28894/api/ability-scores/123";
 
-      bear.save(function(err) {
-          if(err)
-            res.send(err);
-          res.json({ message: "Bear is made, now is new Bear." })
-        })
-      })
-
-
-    .get(function(req, res){
-      Bear.find(function(err, bears){
-        if(err)
-          res.send(err)
-        res.json(bears)
-      })
-    })
-
-  router.route('/bears/:bear_id')
-
-    .get(function(req, res){
-      Bear.findById(req.params.bear_id, function(err, bear){
-        if(err)
+      feature.save(function(err) {
+        if(err) {
           res.send(err);
-        res.json(bear)
+        } else {
+          res.json({ message: "feature created" });
+        }
       });
     })
-
-    .put(function(req,res){
-      Bear.findById(req.params.bear_id, function(err, bear){
-        if(err)
+    .get(function(req, res){
+      Feature.find(function(err, bears){
+        if(err) {
           res.send(err);
-        bear.name = req.body.name;
+        } else {
+          res.json(bears);
+        }
+      });
+    });
 
-        bear.save(function(err) {
-          if(err)
-            res.send(err);
-          res.json({ message: "Bear was saved very good" })
-        })
-      })
-    })
-
-    .delete(function(req, res){
-      Bear.remove({
-        _id: req.params.bear_id
-      }, function(err, bear) {
-        if(err)
+  router.route('/features/:index')
+    .get(function(req, res){
+      Feature.findBy({"index": req.params.index},  function(err, bears){
+        if(err) {
           res.send(err);
-          res.json({ message: "Now is dead bear."});
+        } else {
+          res.json(bears);
+        }
       });
     });
 

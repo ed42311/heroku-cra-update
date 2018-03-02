@@ -5,7 +5,7 @@ export default class BearsTest extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      bears: [],
+      features: [],
       fetching: true
     };
   }
@@ -21,7 +21,7 @@ export default class BearsTest extends Component {
       .then(json => {
         console.log(json);
         this.setState({
-          bears: json,
+          features: json,
           fetching: false
         });
       }).catch(e => {
@@ -34,9 +34,9 @@ export default class BearsTest extends Component {
 
   render() {
     return (
-      <div className="BearTest">
-        {this.state.bears.length > 0 ?
-          this.state.bears.map((bear) => <p>{bear.name}</p>) :
+      <div className="FeatureTest">
+        {this.state.feature.length > 0 ?
+          this.state.feature.map((feature) => <p>{feature.name}</p>) :
           (<h2>no bears</h2>)
         }
       </div>
